@@ -14,9 +14,10 @@ interface Props {
   blocks: BuilderBlock[];
   pixels: PixelData[];
   funnelSlug: string | null;
+  pageId: string;
 }
 
-export default function PublicPageClient({ blocks, pixels, funnelSlug }: Props) {
+export default function PublicPageClient({ blocks, pixels, funnelSlug, pageId }: Props) {
   useEffect(() => {
     // Inject tracking pixels
     pixels.forEach((p) => {
@@ -44,7 +45,7 @@ export default function PublicPageClient({ blocks, pixels, funnelSlug }: Props) 
 
   return (
     <div className="min-h-screen bg-gray-950">
-      <PageRenderer blocks={blocks} />
+      <PageRenderer blocks={blocks} pageId={pageId} />
       {funnelSlug && (
         <div className="fixed bottom-4 right-4 z-50">
           <a

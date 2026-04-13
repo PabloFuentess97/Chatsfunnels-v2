@@ -38,6 +38,7 @@ export default async function PublicLandingPage({
       blocks={page.content as any[]}
       pixels={pixels}
       funnelSlug={funnelSlug}
+      pageId={page.id}
     />
   );
 }

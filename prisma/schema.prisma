@@ -273,9 +273,50 @@ model LandingPage {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  funnel Funnel? @relation(fields: [funnelId], references: [id])
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  funnel          Funnel?          @relation(fields: [funnelId], references: [id])
+  formSubmissions FormSubmission[]
+  abTests         ABTest[]         @relation("ABTestOriginal")
+  abTestVariants  ABTest[]         @relation("ABTestVariant")
 
   @@index([userId])
   @@index([slug])
+}
+
+model FormSubmission {
+  id            String   @id @default(cuid())
+  landingPageId String
+  formBlockId   String
+  data          Json
+  ip            String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+
+  landingPage LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+
+  @@index([landingPageId])
+  @@index([formBlockId])
+}
+
+model ABTest {
+  id              String    @id @default(cuid())
+  name            String
+  userId          String
+  originalPageId  String
+  variantPageId   String
+  trafficSplit    Int       @default(50)
+  status          String    @default("draft")
+  originalViews   Int       @default(0)
+  variantViews    Int       @default(0)
+  originalConversions Int   @default(0)
+  variantConversions  Int   @default(0)
+  startedAt       DateTime?
+  endedAt         DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  originalPage LandingPage @relation("ABTestOriginal", fields: [originalPageId], references: [id], onDelete: Cascade)
+  variantPage  LandingPage @relation("ABTestVariant", fields: [variantPageId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

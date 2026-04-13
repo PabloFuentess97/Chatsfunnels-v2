@@ -1,6 +1,6 @@
 "use client";
 
-import { BuilderBlock, BlockStyles } from "../types";
+import { BuilderBlock, BlockStyles, FormField, BlockType } from "../types";
 
 interface PropertiesPanelProps {
   block: BuilderBlock | null;
@@ -30,6 +30,33 @@ export default function PropertiesPanel({ block, onUpdate, onDuplicate, onRemove
     onUpdate(block.id, { props: { ...(block.props || {}), [key]: value } });
   };
 
+  const addFormField = () => {
+    const fields = [...(block.formFields || [])];
+    fields.push({
+      id: "ff_" + Math.random().toString(36).substring(2, 8),
+      type: "text",
+      label: "New Field",
+      placeholder: "",
+      required: false,
+    });
+    onUpdate(block.id, { formFields: fields });
+  };
+
+  const updateFormField = (fieldId: string, updates: Partial<FormField>) => {
+    const fields = (block.formFields || []).map((f) =>
+      f.id === fieldId ? { ...f, ...updates } : f
+    );
+    onUpdate(block.id, { formFields: fields });
+  };
+
+  const removeFormField = (fieldId: string) => {
+    const fields = (block.formFields || []).filter((f) => f.id !== fieldId);
+    onUpdate(block.id, { formFields: fields });
+  };
+
+  const hasTypography = ["heading", "text", "button", "testimonial", "countdown"].includes(block.type);
+  const hasContent = !["spacer", "section", "divider", "columns", "countdown"].includes(block.type);
+
   return (
     <div className="w-72 bg-gray-900 border-l border-gray-800 flex flex-col h-full overflow-y-auto">
       {/* Header */}
@@ -45,58 +72,146 @@ export default function PropertiesPanel({ block, onUpdate, onDuplicate, onRemove
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-4 space-y-4">
-        {block.type !== "spacer" && block.type !== "section" && (
+        {/* Content */}
+        {hasContent && block.type !== "form" && block.type !== "video" && (
           <div>
             <label className="block text-xs font-medium text-gray-400 mb-1.5">
               {block.type === "image" ? "Image URL" : "Content"}
             </label>
-            {block.type === "text" ? (
-              <textarea
-                value={block.content}
-                onChange={(e) => updateContent(e.target.value)}
-                rows={3}
-                className="w-full px-2.5 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-sm text-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              />
+            {block.type === "text" || block.type === "testimonial" ? (
+              <textarea value={block.content} onChange={(e) => updateContent(e.target.value)} rows={3} className="w-full px-2.5 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-sm text-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
             ) : (
-              <input
-                type="text"
-                value={block.content}
-                onChange={(e) => updateContent(e.target.value)}
-                className="w-full px-2.5 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-sm text-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              />
+              <input type="text" value={block.content} onChange={(e) => updateContent(e.target.value)} className="w-full px-2.5 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-sm text-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
             )}
           </div>
         )}
 
+        {/* Form: button text */}
+        {block.type === "form" && (
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1.5">Submit Button Text</label>
+            <input type="text" value={block.content} onChange={(e) => updateContent(e.target.value)} className="w-full px-2.5 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-sm text-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+        )}
+
+        {/* Button props */}
         {block.type === "button" && (
           <div>
             <label className="block text-xs font-medium text-gray-400 mb-1.5">Link URL</label>
-            <input
-              type="text"
-              value={block.props?.href || ""}
-              onChange={(e) => updateProp("href", e.target.value)}
-              placeholder="https://..."
-              className="w-full px-2.5 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-sm text-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-            />
+            <input type="text" value={block.props?.href || ""} onChange={(e) => updateProp("href", e.target.value)} placeholder="https://..." className="w-full px-2.5 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-sm text-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
           </div>
         )}
 
+        {/* Image alt */}
         {block.type === "image" && (
           <div>
             <label className="block text-xs font-medium text-gray-400 mb-1.5">Alt Text</label>
-            <input
-              type="text"
-              value={block.props?.alt || ""}
-              onChange={(e) => updateProp("alt", e.target.value)}
-              className="w-full px-2.5 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-sm text-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-            />
+            <input type="text" value={block.props?.alt || ""} onChange={(e) => updateProp("alt", e.target.value)} className="w-full px-2.5 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-sm text-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
           </div>
         )}
 
+        {/* Video props */}
+        {block.type === "video" && (
+          <>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Video Embed URL</label>
+              <input type="text" value={block.props?.url || ""} onChange={(e) => updateProp("url", e.target.value)} placeholder="https://youtube.com/embed/..." className="w-full px-2.5 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-sm text-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Aspect Ratio</label>
+              <select value={block.props?.aspectRatio || "16/9"} onChange={(e) => updateProp("aspectRatio", e.target.value)} className="w-full px-2.5 py-1.5 bg-gray-800 border border-gray-700 rounded-md text-sm text-white">
+                <option value="16/9">16:9</option>
+                <option value="4/3">4:3</option>
+                <option value="1/1">1:1</option>
+              </select>
+            </div>
+          </>
+        )}
+
+        {/* Testimonial props */}
+        {block.type === "testimonial" && (
+          <>
+            <SectionLabel>Author Info</SectionLabel>
+            <div>
+              <label className="block text-[10px] text-gray-500 mb-1">Author Name</label>
+              <input type="text" value={block.props?.author || ""} onChange={(e) => updateProp("author", e.target.value)} className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs text-white" />
+            </div>
+            <div>
+              <label className="block text-[10px] text-gray-500 mb-1">Role / Company</label>
+              <input type="text" value={block.props?.role || ""} onChange={(e) => updateProp("role", e.target.value)} className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs text-white" />
+            </div>
+          </>
+        )}
+
+        {/* Countdown props */}
+        {block.type === "countdown" && (
+          <>
+            <SectionLabel>Countdown</SectionLabel>
+            <div>
+              <label className="block text-[10px] text-gray-500 mb-1">Target Date</label>
+              <input type="datetime-local" value={(block.props?.targetDate || "").slice(0, 16)} onChange={(e) => updateProp("targetDate", new Date(e.target.value).toISOString())} className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs text-white" />
+            </div>
+            <div>
+              <label className="block text-[10px] text-gray-500 mb-1">Label Text</label>
+              <input type="text" value={block.props?.label || ""} onChange={(e) => updateProp("label", e.target.value)} placeholder="Offer expires in:" className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs text-white" />
+            </div>
+          </>
+        )}
+
+        {/* ─── FORM FIELDS EDITOR ─── */}
+        {block.type === "form" && (
+          <>
+            <SectionLabel>Form Fields</SectionLabel>
+            <div className="space-y-3">
+              {(block.formFields || []).map((field, idx) => (
+                <div key={field.id} className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] text-gray-500 uppercase">Field {idx + 1}</span>
+                    <button onClick={() => removeFormField(field.id)} className="text-red-400 hover:text-red-300 text-xs">Remove</button>
+                  </div>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="block text-[10px] text-gray-500 mb-0.5">Type</label>
+                      <select value={field.type} onChange={(e) => updateFormField(field.id, { type: e.target.value as FormField["type"] })} className="w-full px-2 py-1 bg-gray-900 border border-gray-700 rounded text-xs text-white">
+                        <option value="text">Text</option>
+                        <option value="email">Email</option>
+                        <option value="tel">Phone</option>
+                        <option value="textarea">Textarea</option>
+                        <option value="select">Dropdown</option>
+                        <option value="checkbox">Checkbox</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-gray-500 mb-0.5">Label</label>
+                      <input type="text" value={field.label} onChange={(e) => updateFormField(field.id, { label: e.target.value })} className="w-full px-2 py-1 bg-gray-900 border border-gray-700 rounded text-xs text-white" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-gray-500 mb-0.5">Placeholder</label>
+                      <input type="text" value={field.placeholder || ""} onChange={(e) => updateFormField(field.id, { placeholder: e.target.value })} className="w-full px-2 py-1 bg-gray-900 border border-gray-700 rounded text-xs text-white" />
+                    </div>
+                    {field.type === "select" && (
+                      <div>
+                        <label className="block text-[10px] text-gray-500 mb-0.5">Options (comma separated)</label>
+                        <input type="text" value={(field.options || []).join(", ")} onChange={(e) => updateFormField(field.id, { options: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })} className="w-full px-2 py-1 bg-gray-900 border border-gray-700 rounded text-xs text-white" placeholder="Option A, Option B" />
+                      </div>
+                    )}
+                    <label className="flex items-center gap-2 text-xs text-gray-400">
+                      <input type="checkbox" checked={field.required} onChange={(e) => updateFormField(field.id, { required: e.target.checked })} className="rounded" />
+                      Required
+                    </label>
+                  </div>
+                </div>
+              ))}
+              <button onClick={addFormField} className="w-full px-3 py-2 rounded-lg border border-dashed border-gray-600 text-sm text-gray-400 hover:text-white hover:border-gray-500 transition-colors">
+                + Add Field
+              </button>
+            </div>
+          </>
+        )}
+
         {/* Typography */}
-        {(block.type === "heading" || block.type === "text" || block.type === "button") && (
+        {hasTypography && (
           <>
             <SectionLabel>Typography</SectionLabel>
             <div className="grid grid-cols-2 gap-2">
@@ -119,11 +234,7 @@ export default function PropertiesPanel({ block, onUpdate, onDuplicate, onRemove
               <label className="block text-[10px] text-gray-500 mb-1">Text Align</label>
               <div className="flex bg-gray-800 rounded-md p-0.5">
                 {(["left", "center", "right"] as const).map((align) => (
-                  <button
-                    key={align}
-                    onClick={() => updateStyle("textAlign", align)}
-                    className={`flex-1 py-1 text-xs rounded ${block.styles.textAlign === align ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white"}`}
-                  >
+                  <button key={align} onClick={() => updateStyle("textAlign", align)} className={`flex-1 py-1 text-xs rounded ${block.styles.textAlign === align ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white"}`}>
                     {align.charAt(0).toUpperCase() + align.slice(1)}
                   </button>
                 ))}
@@ -135,7 +246,7 @@ export default function PropertiesPanel({ block, onUpdate, onDuplicate, onRemove
         {/* Colors */}
         <SectionLabel>Colors</SectionLabel>
         <div className="grid grid-cols-2 gap-2">
-          {block.type !== "spacer" && (
+          {!["spacer", "divider"].includes(block.type) && (
             <div>
               <label className="block text-[10px] text-gray-500 mb-1">Text Color</label>
               <div className="flex gap-1">
@@ -167,37 +278,29 @@ export default function PropertiesPanel({ block, onUpdate, onDuplicate, onRemove
         </div>
 
         {/* Dimensions */}
-        {(block.type === "image" || block.type === "section" || block.type === "spacer") && (
-          <>
-            <SectionLabel>Dimensions</SectionLabel>
-            <div className="grid grid-cols-2 gap-2">
-              {block.type === "spacer" && (
-                <div>
-                  <label className="block text-[10px] text-gray-500 mb-1">Height</label>
-                  <input type="text" value={block.styles.height || ""} onChange={(e) => updateStyle("height", e.target.value)} className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs text-white" />
-                </div>
-              )}
-              <div>
-                <label className="block text-[10px] text-gray-500 mb-1">Max Width</label>
-                <input type="text" value={block.styles.maxWidth || ""} onChange={(e) => updateStyle("maxWidth", e.target.value)} className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs text-white" />
-              </div>
-              <div>
-                <label className="block text-[10px] text-gray-500 mb-1">Border Radius</label>
-                <input type="text" value={block.styles.borderRadius || ""} onChange={(e) => updateStyle("borderRadius", e.target.value)} className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs text-white" />
-              </div>
-            </div>
-          </>
-        )}
-
-        {block.type === "button" && (
-          <>
-            <SectionLabel>Button</SectionLabel>
+        <SectionLabel>Dimensions</SectionLabel>
+        <div className="grid grid-cols-2 gap-2">
+          {(block.type === "spacer" || block.type === "divider") && (
             <div>
-              <label className="block text-[10px] text-gray-500 mb-1">Border Radius</label>
-              <input type="text" value={block.styles.borderRadius || ""} onChange={(e) => updateStyle("borderRadius", e.target.value)} className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs text-white" />
+              <label className="block text-[10px] text-gray-500 mb-1">Height</label>
+              <input type="text" value={block.styles.height || ""} onChange={(e) => updateStyle("height", e.target.value)} className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs text-white" />
             </div>
-          </>
-        )}
+          )}
+          <div>
+            <label className="block text-[10px] text-gray-500 mb-1">Max Width</label>
+            <input type="text" value={block.styles.maxWidth || ""} onChange={(e) => updateStyle("maxWidth", e.target.value)} className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs text-white" />
+          </div>
+          <div>
+            <label className="block text-[10px] text-gray-500 mb-1">Border Radius</label>
+            <input type="text" value={block.styles.borderRadius || ""} onChange={(e) => updateStyle("borderRadius", e.target.value)} className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs text-white" />
+          </div>
+        </div>
+
+        {/* Box Shadow */}
+        <div>
+          <label className="block text-[10px] text-gray-500 mb-1">Box Shadow</label>
+          <input type="text" value={block.styles.boxShadow || ""} onChange={(e) => updateStyle("boxShadow", e.target.value)} placeholder="0 4px 20px rgba(0,0,0,0.3)" className="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs text-white" />
+        </div>
       </div>
     </div>
   );

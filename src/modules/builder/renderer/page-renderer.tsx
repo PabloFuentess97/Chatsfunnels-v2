@@ -8,9 +8,10 @@ interface PageRendererProps {
   isEditor?: boolean;
   selectedBlockId?: string | null;
   onSelectBlock?: (id: string) => void;
+  pageId?: string;
 }
 
-export default function PageRenderer({ blocks, isEditor = false, selectedBlockId, onSelectBlock }: PageRendererProps) {
+export default function PageRenderer({ blocks, isEditor = false, selectedBlockId, onSelectBlock, pageId }: PageRendererProps) {
   return (
     <div className="min-h-full">
       {blocks.map((block) => (
@@ -20,6 +21,7 @@ export default function PageRenderer({ blocks, isEditor = false, selectedBlockId
           isEditor={isEditor}
           isSelected={selectedBlockId === block.id}
           onClick={onSelectBlock}
+          pageId={pageId}
         />
       ))}
     </div>
