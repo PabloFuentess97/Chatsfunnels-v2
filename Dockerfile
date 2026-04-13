@@ -54,13 +54,17 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy ALL of node_modules prisma + @prisma for db push/migrate to work
+# Copy Prisma CLI + client for db push to work at runtime
 COPY --from=dev-deps /app/node_modules/prisma ./node_modules/prisma
 COPY --from=dev-deps /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=prisma /app/node_modules/.prisma ./node_modules/.prisma
 COPY --chown=nextjs:nodejs prisma ./prisma
 
-# Copy package.json (needed by npx to find local prisma)
+# Create the .bin symlink so `npx prisma` and direct calls work
+RUN mkdir -p node_modules/.bin && \
+    ln -sf ../prisma/build/index.js node_modules/.bin/prisma
+
+# Copy package.json
 COPY --chown=nextjs:nodejs package.json ./
 
 # Copy entrypoint script
