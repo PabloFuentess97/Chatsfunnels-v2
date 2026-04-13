@@ -106,7 +106,7 @@ export default function FunnelDetailPage() {
   };
 
   if (loading) return <div className="animate-pulse h-64 bg-gray-200 dark:bg-gray-700 rounded-xl" />;
-  if (!funnel) return <p className="text-red-500">Funnel not found</p>;
+  if (!funnel) return <p className="text-red-500">Funnel no encontrado</p>;
 
   const shareUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/r/${funnel.slug}`;
 
@@ -114,54 +114,54 @@ export default function FunnelDetailPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <button onClick={() => router.push("/funnels")} className="text-sm text-gray-500 dark:text-gray-400 hover:underline mb-1 block">&larr; Back to Funnels</button>
+          <button onClick={() => router.push("/funnels")} className="text-sm text-gray-500 dark:text-gray-400 hover:underline mb-1 block">&larr; Volver a Funnels</button>
           {editing ? (
             <div className="space-y-2">
               <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} className="text-2xl font-bold bg-transparent border-b border-blue-500 text-gray-900 dark:text-white focus:outline-none" />
               <input type="text" value={editDesc} onChange={(e) => setEditDesc(e.target.value)} className="block text-sm bg-transparent border-b border-blue-500 text-gray-500 dark:text-gray-400 focus:outline-none" />
               <div className="flex gap-2">
-                <Button size="sm" onClick={saveEdit}>Save</Button>
-                <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>Cancel</Button>
+                <Button size="sm" onClick={saveEdit}>Guardar</Button>
+                <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>Cancelar</Button>
               </div>
             </div>
           ) : (
             <>
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{funnel.name}</h1>
-                <Badge variant={funnel.isActive ? "success" : "default"}>{funnel.isActive ? "Active" : "Inactive"}</Badge>
+                <Badge variant={funnel.isActive ? "success" : "default"}>{funnel.isActive ? "Activo" : "Inactivo"}</Badge>
               </div>
               <p className="text-gray-500 dark:text-gray-400 mt-1">{funnel.description}</p>
             </>
           )}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setEditing(true)}>Edit</Button>
+          <Button variant="outline" size="sm" onClick={() => setEditing(true)}>Editar</Button>
           <Button variant={funnel.isActive ? "secondary" : "primary"} size="sm" onClick={toggleFunnel}>
-            {funnel.isActive ? "Deactivate" : "Activate"}
+            {funnel.isActive ? "Desactivar" : "Activar"}
           </Button>
         </div>
       </div>
 
       <Card>
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Share URL</h3>
+        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">URL para compartir</h3>
         <div className="flex items-center gap-2">
           <code className="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-900 rounded text-sm text-gray-800 dark:text-gray-200">{shareUrl}</code>
-          <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(shareUrl)}>Copy</Button>
+          <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(shareUrl)}>Copiar</Button>
         </div>
-        <p className="text-xs text-gray-400 mt-2">Total clicks: {funnel._count.clicks} | Clicks per round: {funnel.clicksPerRound}</p>
+        <p className="text-xs text-gray-400 mt-2">Clicks totales: {funnel._count.clicks} | Clicks por ronda: {funnel.clicksPerRound}</p>
       </Card>
 
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Links ({funnel.links.length})</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Enlaces ({funnel.links.length})</h2>
         <form onSubmit={addLink} className="flex gap-2 mb-4">
-          <input type="url" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} placeholder="https://example.com" className="flex-1 px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" required />
-          <input type="number" value={newWeight} onChange={(e) => setNewWeight(e.target.value)} placeholder="Weight" step="0.1" min="0.1" className="w-24 px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
-          <input type="number" value={newPriority} onChange={(e) => setNewPriority(e.target.value)} placeholder="Priority" min="0" className="w-24 px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
-          <Button type="submit" loading={adding}>Add Link</Button>
+          <input type="url" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} placeholder="https://ejemplo.com" className="flex-1 px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" required />
+          <input type="number" value={newWeight} onChange={(e) => setNewWeight(e.target.value)} placeholder="Peso" step="0.1" min="0.1" className="w-24 px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
+          <input type="number" value={newPriority} onChange={(e) => setNewPriority(e.target.value)} placeholder="Prioridad" min="0" className="w-24 px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
+          <Button type="submit" loading={adding}>Agregar Enlace</Button>
         </form>
 
         {funnel.links.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">No links yet. Add your first link above.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">Aun no tienes enlaces. Agrega tu primer enlace arriba.</p>
         ) : (
           <div className="space-y-2">
             {funnel.links.map((link, index) => (
@@ -171,15 +171,15 @@ export default function FunnelDetailPage() {
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{link.url}</p>
                   <div className="flex gap-3 text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                     <span>Clicks: {link.clicks}</span>
-                    <span>Weight: {link.weight}</span>
-                    <span>Priority: {link.priority}</span>
+                    <span>Peso: {link.weight}</span>
+                    <span>Prioridad: {link.priority}</span>
                   </div>
                 </div>
-                <Badge variant={link.isActive ? "success" : "default"}>{link.isActive ? "On" : "Off"}</Badge>
+                <Badge variant={link.isActive ? "success" : "default"}>{link.isActive ? "Activo" : "Inactivo"}</Badge>
                 <Button size="sm" variant="ghost" onClick={() => toggleLink(link.id, link.isActive)}>
-                  {link.isActive ? "Disable" : "Enable"}
+                  {link.isActive ? "Desactivar" : "Activar"}
                 </Button>
-                <Button size="sm" variant="danger" onClick={() => removeLink(link.id)}>Remove</Button>
+                <Button size="sm" variant="danger" onClick={() => removeLink(link.id)}>Eliminar</Button>
               </div>
             ))}
           </div>

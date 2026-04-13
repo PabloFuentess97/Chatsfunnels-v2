@@ -27,69 +27,74 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Registration failed");
+        setError(data.error || "Error al registrar");
         setLoading(false);
         return;
       }
 
       router.push("/login?registered=true");
     } catch {
-      setError("Something went wrong");
+      setError("Algo salio mal");
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-600 rounded-xl mb-4">
-            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl mb-5 shadow-lg shadow-blue-500/25">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create your account</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Start using ChatsFunnels today</p>
+          <h1 className="text-3xl font-bold text-white tracking-tight">Crea tu cuenta</h1>
+          <p className="text-gray-400 mt-2 text-base">Comienza a usar ChatsFunnels hoy</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 shadow-2xl shadow-black/20">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm">
+              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3.5 rounded-xl text-sm font-medium flex items-center gap-2">
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
                 {error}
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1.5">Nombre completo</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border rounded-xl text-white bg-gray-800/50 border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 transition-all"
+                placeholder="Juan Perez"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1.5">Correo electronico</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border rounded-xl text-white bg-gray-800/50 border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 transition-all"
+                placeholder="tu@email.com"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1.5">Contrasena</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Min. 8 characters"
+                className="w-full px-4 py-3 border rounded-xl text-white bg-gray-800/50 border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 transition-all"
+                placeholder="Minimo 8 caracteres"
                 required
                 minLength={8}
               />
@@ -98,18 +103,20 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-xl font-semibold hover:from-blue-500 hover:to-cyan-500 disabled:opacity-50 transition-all shadow-lg shadow-blue-600/25 cursor-pointer disabled:cursor-not-allowed"
             >
-              {loading ? "Creating account..." : "Create Account"}
+              {loading ? "Creando cuenta..." : "Crear cuenta"}
             </button>
           </form>
 
-          <p className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
-            Already have an account?{" "}
-            <Link href="/login" className="text-blue-600 hover:underline">
-              Sign in
-            </Link>
-          </p>
+          <div className="mt-6 pt-6 border-t border-gray-800">
+            <p className="text-center text-sm text-gray-400">
+              Ya tienes cuenta?{" "}
+              <Link href="/login" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                Inicia sesion
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

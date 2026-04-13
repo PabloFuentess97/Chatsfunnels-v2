@@ -51,11 +51,11 @@ function maskIp(ip: string | null): string {
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return "ahora";
+  if (mins < 60) return `hace ${mins}m`;
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
+  if (hrs < 24) return `hace ${hrs}h`;
+  return `hace ${Math.floor(hrs / 24)}d`;
 }
 
 export default function AnalyticsPage() {
@@ -97,8 +97,8 @@ export default function AnalyticsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Deep insights into your funnel performance</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Analiticas</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Informacion detallada sobre el rendimiento de tus funnels</p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
           <select
@@ -106,7 +106,7 @@ export default function AnalyticsPage() {
             onChange={(e) => setSelectedFunnel(e.target.value)}
             className="px-3 py-2 border rounded-lg text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 min-w-[200px]"
           >
-            <option value="">Select funnel...</option>
+            <option value="">Selecciona un funnel...</option>
             {funnels.map((f) => (
               <option key={f.id} value={f.id}>
                 {f.name} ({f._count.clicks})
@@ -133,8 +133,8 @@ export default function AnalyticsPage() {
             <svg className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Select a funnel to view analytics</h3>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Choose from the dropdown above</p>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Selecciona un funnel para ver las analiticas</h3>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Elige del selector de arriba</p>
           </div>
         </Card>
       )}
@@ -153,7 +153,7 @@ export default function AnalyticsPage() {
           {/* Stat Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Clicks</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Clicks Totales</p>
               <div className="flex items-end gap-3 mt-1">
                 <p className="text-3xl font-bold text-gray-900 dark:text-white">{formatNumber(analytics.totalClicks)}</p>
                 {analytics.trend !== 0 && (
@@ -164,18 +164,18 @@ export default function AnalyticsPage() {
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Previous Period</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Periodo Anterior</p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{formatNumber(analytics.previousClicks)}</p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Countries Reached</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Paises Alcanzados</p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{analytics.clicksByCountry.length}</p>
             </div>
           </div>
 
           {/* Area Chart - Clicks Over Time */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Clicks Over Time</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Clicks en el Tiempo</h2>
             {analytics.clicksByDay.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={analytics.clicksByDay.map((d) => ({ date: d.date.slice(5), clicks: d.count }))}>
@@ -193,14 +193,14 @@ export default function AnalyticsPage() {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-12">No data for this period</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-12">Sin datos para este periodo</p>
             )}
           </Card>
 
           {/* Row: Device + Browser */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Device Distribution</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Dispositivos</h2>
               {analytics.clicksByDevice.length > 0 ? (
                 <div className="flex items-center">
                   <ResponsiveContainer width="50%" height={200}>
@@ -225,12 +225,12 @@ export default function AnalyticsPage() {
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-gray-500 py-8 text-center">No data yet</p>
+                <p className="text-sm text-gray-500 py-8 text-center">Sin datos aun</p>
               )}
             </Card>
 
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Browser Breakdown</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Navegadores</h2>
               {analytics.clicksByBrowser.length > 0 ? (
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={analytics.clicksByBrowser}>
@@ -244,7 +244,7 @@ export default function AnalyticsPage() {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-sm text-gray-500 py-8 text-center">No data yet</p>
+                <p className="text-sm text-gray-500 py-8 text-center">Sin datos aun</p>
               )}
             </Card>
           </div>
@@ -252,7 +252,7 @@ export default function AnalyticsPage() {
           {/* Row: Hourly Activity + OS */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Hourly Activity</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Actividad por Hora</h2>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={analytics.clicksByHour}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
@@ -265,7 +265,7 @@ export default function AnalyticsPage() {
             </Card>
 
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Operating System</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Sistema Operativo</h2>
               {analytics.clicksByOS.length > 0 ? (
                 <div className="flex items-center">
                   <ResponsiveContainer width="50%" height={200}>
@@ -290,7 +290,7 @@ export default function AnalyticsPage() {
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-gray-500 py-8 text-center">No data yet</p>
+                <p className="text-sm text-gray-500 py-8 text-center">Sin datos aun</p>
               )}
             </Card>
           </div>
@@ -298,7 +298,7 @@ export default function AnalyticsPage() {
           {/* Row: Countries + Top Links */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Countries</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Paises Principales</h2>
               {analytics.clicksByCountry.length > 0 ? (
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={analytics.clicksByCountry} layout="vertical" margin={{ left: 50 }}>
@@ -310,12 +310,12 @@ export default function AnalyticsPage() {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-sm text-gray-500 py-8 text-center">No data yet</p>
+                <p className="text-sm text-gray-500 py-8 text-center">Sin datos aun</p>
               )}
             </Card>
 
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Links</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Mejores Enlaces</h2>
               {analytics.topLinks.length > 0 ? (
                 <div className="space-y-3">
                   {analytics.topLinks.map((link, i) => {
@@ -338,7 +338,7 @@ export default function AnalyticsPage() {
                   })}
                 </div>
               ) : (
-                <p className="text-sm text-gray-500 py-8 text-center">No links yet</p>
+                <p className="text-sm text-gray-500 py-8 text-center">Sin enlaces aun</p>
               )}
             </Card>
           </div>
@@ -346,8 +346,8 @@ export default function AnalyticsPage() {
           {/* Recent Clicks */}
           <Card>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Clicks</h2>
-              <Badge variant="info">{analytics.recentClicks.length} latest</Badge>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Clicks Recientes</h2>
+              <Badge variant="info">{analytics.recentClicks.length} ultimos</Badge>
             </div>
             {analytics.recentClicks.length > 0 ? (
               <div className="overflow-x-auto">
@@ -355,11 +355,11 @@ export default function AnalyticsPage() {
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                       <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase pb-2">IP</th>
-                      <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase pb-2">Country</th>
-                      <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase pb-2">Device</th>
-                      <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase pb-2">Browser</th>
-                      <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase pb-2">Link</th>
-                      <th className="text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase pb-2">Time</th>
+                      <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase pb-2">Pais</th>
+                      <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase pb-2">Dispositivo</th>
+                      <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase pb-2">Navegador</th>
+                      <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase pb-2">Enlace</th>
+                      <th className="text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase pb-2">Cuando</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50">
@@ -377,7 +377,7 @@ export default function AnalyticsPage() {
                 </table>
               </div>
             ) : (
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">No clicks recorded yet</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">Sin clicks registrados aun</p>
             )}
           </Card>
         </>

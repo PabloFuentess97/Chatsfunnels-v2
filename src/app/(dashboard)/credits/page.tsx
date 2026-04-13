@@ -36,20 +36,20 @@ export default function CreditsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Credits</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your credit balance</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Creditos</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Gestiona tu saldo de creditos</p>
       </div>
 
       <Card>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Current Balance</p>
-        <p className="text-4xl font-bold text-blue-600 mt-1">{balance} credits</p>
-        <p className="text-xs text-gray-400 mt-2">Credits are consumed per click (1), per funnel creation (10), and per round participation (5).</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Saldo Actual</p>
+        <p className="text-4xl font-bold text-blue-600 mt-1">{balance} creditos</p>
+        <p className="text-xs text-gray-400 mt-2">Los creditos se consumen por click (1), por crear funnel (10) y por participar en rondas (5).</p>
       </Card>
 
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Transaction History</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Historial de Transacciones</h2>
         {history.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No transactions yet</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">Sin transacciones aun</p>
         ) : (
           <div className="space-y-2">
             {history.map((entry) => (

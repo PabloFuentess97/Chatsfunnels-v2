@@ -87,26 +87,26 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Configure tracking pixels and webhooks</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Ajustes</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Configura pixeles de seguimiento y webhooks</p>
       </div>
 
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Profile</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Perfil</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400">{session?.user?.name} ({session?.user?.email})</p>
       </Card>
 
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tracking Pixels</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Pixeles de Seguimiento</h2>
         <form onSubmit={addPixel} className="flex gap-2 mb-4 flex-wrap">
-          <input type="text" value={pixelName} onChange={(e) => setPixelName(e.target.value)} placeholder="Pixel name" className="px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" required />
+          <input type="text" value={pixelName} onChange={(e) => setPixelName(e.target.value)} placeholder="Nombre del pixel" className="px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" required />
           <select value={pixelType} onChange={(e) => setPixelType(e.target.value)} className="px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500">
             <option value="FACEBOOK">Facebook Pixel</option>
             <option value="GOOGLE_ANALYTICS">Google Analytics</option>
             <option value="CUSTOM">Custom Script</option>
           </select>
-          <input type="text" value={pixelId} onChange={(e) => setPixelId(e.target.value)} placeholder="Pixel ID" className="px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" required />
-          <Button type="submit" size="sm">Add Pixel</Button>
+          <input type="text" value={pixelId} onChange={(e) => setPixelId(e.target.value)} placeholder="ID del pixel" className="px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" required />
+          <Button type="submit" size="sm">Agregar Pixel</Button>
         </form>
         {pixels.length > 0 && (
           <div className="space-y-2">
@@ -116,7 +116,7 @@ export default function SettingsPage() {
                   <span className="text-sm font-medium text-gray-900 dark:text-white">{p.name}</span>
                   <span className="text-xs text-gray-500 ml-2">{p.type} - {p.pixelId}</span>
                 </div>
-                <Button size="sm" variant="danger" onClick={() => removePixel(p.id)}>Remove</Button>
+                <Button size="sm" variant="danger" onClick={() => removePixel(p.id)}>Eliminar</Button>
               </div>
             ))}
           </div>
@@ -126,7 +126,7 @@ export default function SettingsPage() {
       <Card>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Webhooks</h2>
         <form onSubmit={addWebhook} className="space-y-3 mb-4">
-          <input type="url" value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} placeholder="https://your-webhook-url.com" className="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" required />
+          <input type="url" value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} placeholder="https://tu-webhook-url.com" className="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" required />
           <div className="flex flex-wrap gap-2">
             {["user.registered", "funnel.clicks_reached", "round.new", "round.completed"].map((event) => (
               <button key={event} type="button" onClick={() => toggleEvent(event)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${webhookEvents.includes(event) ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300" : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"}`}>
@@ -134,7 +134,7 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
-          <Button type="submit" size="sm" disabled={webhookEvents.length === 0}>Add Webhook</Button>
+          <Button type="submit" size="sm" disabled={webhookEvents.length === 0}>Agregar Webhook</Button>
         </form>
         {webhooks.length > 0 && (
           <div className="space-y-2">
@@ -144,7 +144,7 @@ export default function SettingsPage() {
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-md">{w.url}</p>
                   <p className="text-xs text-gray-500">{w.events.join(", ")}</p>
                 </div>
-                <Button size="sm" variant="danger" onClick={() => removeWebhook(w.id)}>Remove</Button>
+                <Button size="sm" variant="danger" onClick={() => removeWebhook(w.id)}>Eliminar</Button>
               </div>
             ))}
           </div>

@@ -52,7 +52,7 @@ export default function FunnelsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this funnel?")) return;
+    if (!confirm("¿Estas seguro de que quieres eliminar este funnel?")) return;
     await fetch(`/api/funnels/${id}`, { method: "DELETE" });
     fetchFunnels();
   };
@@ -98,30 +98,30 @@ export default function FunnelsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Funnels</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your link funnels</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Mis Funnels</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Gestiona tus funnels de enlaces</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleImport}>Import JSON</Button>
-          <Button onClick={() => setShowCreate(true)}>Create Funnel</Button>
+          <Button variant="outline" onClick={handleImport}>Importar JSON</Button>
+          <Button onClick={() => setShowCreate(true)}>Crear Funnel</Button>
         </div>
       </div>
 
       {showCreate && (
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">New Funnel</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Nuevo Funnel</h2>
           <form onSubmit={handleCreate} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre</label>
               <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} className="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripcion</label>
               <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} className="w-full px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" rows={2} />
             </div>
             <div className="flex gap-2">
-              <Button type="submit" loading={creating}>Create</Button>
-              <Button variant="ghost" onClick={() => setShowCreate(false)}>Cancel</Button>
+              <Button type="submit" loading={creating}>Crear</Button>
+              <Button variant="ghost" onClick={() => setShowCreate(false)}>Cancelar</Button>
             </div>
           </form>
         </div>
@@ -129,9 +129,9 @@ export default function FunnelsPage() {
 
       {funnels.length === 0 ? (
         <EmptyState
-          title="No funnels yet"
-          description="Create your first funnel to start routing traffic intelligently."
-          action={{ label: "Create Funnel", onClick: () => setShowCreate(true) }}
+          title="Aun no tienes funnels"
+          description="Crea tu primer funnel para empezar a distribuir trafico de forma inteligente."
+          action={{ label: "Crear Funnel", onClick: () => setShowCreate(true) }}
         />
       ) : (
         <div className="space-y-3">
@@ -143,22 +143,22 @@ export default function FunnelsPage() {
                     {funnel.name}
                   </Link>
                   <Badge variant={funnel.isActive ? "success" : "default"}>
-                    {funnel.isActive ? "Active" : "Inactive"}
+                    {funnel.isActive ? "Activo" : "Inactivo"}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  <span>{funnel.links.length} links</span>
+                  <span>{funnel.links.length} enlaces</span>
                   <span>{funnel._count.clicks} clicks</span>
                   <span>slug: /r/{funnel.slug}</span>
                   <span>{formatDate(funnel.createdAt)}</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Button size="sm" variant="ghost" onClick={() => handleExport(funnel.id)}>Export</Button>
+                <Button size="sm" variant="ghost" onClick={() => handleExport(funnel.id)}>Exportar</Button>
                 <Link href={`/funnels/${funnel.id}`}>
-                  <Button size="sm" variant="outline">Edit</Button>
+                  <Button size="sm" variant="outline">Editar</Button>
                 </Link>
-                <Button size="sm" variant="danger" onClick={() => handleDelete(funnel.id)}>Delete</Button>
+                <Button size="sm" variant="danger" onClick={() => handleDelete(funnel.id)}>Eliminar</Button>
               </div>
             </div>
           ))}

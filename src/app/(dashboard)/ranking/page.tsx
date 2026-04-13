@@ -25,12 +25,12 @@ export default function RankingPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Ranking</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Top users and funnels</p>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Los mejores usuarios y funnels</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Users</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Mejores Usuarios</h2>
           {data && data.topUsers.length > 0 ? (
             <div className="space-y-3">
               {data.topUsers.map((user, i) => (
@@ -39,19 +39,19 @@ export default function RankingPage() {
                     {i + 1}
                   </span>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name || "Anonymous"}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name || "Anonimo"}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">{user._count.funnels} funnels</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-500">No data yet</p>
+            <p className="text-sm text-gray-500">Sin datos aun</p>
           )}
         </Card>
 
         <Card>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Funnels</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Mejores Funnels</h2>
           {data && data.topFunnels.length > 0 ? (
             <div className="space-y-3">
               {data.topFunnels.map((funnel, i) => (
@@ -61,13 +61,13 @@ export default function RankingPage() {
                   </span>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900 dark:text-white">{funnel.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">by {funnel.user.name || "Anonymous"} - {funnel._count.clicks} clicks</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">por {funnel.user.name || "Anonimo"} - {funnel._count.clicks} clicks</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-500">No data yet</p>
+            <p className="text-sm text-gray-500">Sin datos aun</p>
           )}
         </Card>
       </div>

@@ -52,24 +52,24 @@ export default function DomainsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Custom Domains</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Connect your own domains to funnels</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dominios Personalizados</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Conecta tus propios dominios a tus funnels</p>
         </div>
-        <Button onClick={() => setShowAdd(true)}>Add Domain</Button>
+        <Button onClick={() => setShowAdd(true)}>Agregar Dominio</Button>
       </div>
 
       {showAdd && (
         <Card>
           <form onSubmit={handleAdd} className="flex gap-2">
-            <input type="text" value={newDomain} onChange={(e) => setNewDomain(e.target.value)} placeholder="mydomain.com" className="flex-1 px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" required />
-            <Button type="submit">Add</Button>
-            <Button variant="ghost" onClick={() => setShowAdd(false)}>Cancel</Button>
+            <input type="text" value={newDomain} onChange={(e) => setNewDomain(e.target.value)} placeholder="midominio.com" className="flex-1 px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" required />
+            <Button type="submit">Agregar</Button>
+            <Button variant="ghost" onClick={() => setShowAdd(false)}>Cancelar</Button>
           </form>
         </Card>
       )}
 
       {domains.length === 0 ? (
-        <EmptyState title="No custom domains" description="Add a custom domain to brand your funnel links." action={{ label: "Add Domain", onClick: () => setShowAdd(true) }} />
+        <EmptyState title="Sin dominios personalizados" description="Agrega un dominio personalizado para personalizar tus enlaces de funnel." action={{ label: "Agregar Dominio", onClick: () => setShowAdd(true) }} />
       ) : (
         <div className="space-y-3">
           {domains.map((domain) => (
@@ -78,11 +78,11 @@ export default function DomainsPage() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-gray-900 dark:text-white">{domain.domain}</span>
-                    <Badge variant={domain.isVerified ? "success" : "warning"}>{domain.isVerified ? "Verified" : "Pending"}</Badge>
+                    <Badge variant={domain.isVerified ? "success" : "warning"}>{domain.isVerified ? "Verificado" : "Pendiente"}</Badge>
                   </div>
-                  {domain.funnel && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Linked to: {domain.funnel.name}</p>}
+                  {domain.funnel && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Vinculado a: {domain.funnel.name}</p>}
                 </div>
-                <Button size="sm" variant="danger" onClick={() => handleDelete(domain.id)}>Remove</Button>
+                <Button size="sm" variant="danger" onClick={() => handleDelete(domain.id)}>Eliminar</Button>
               </div>
             </Card>
           ))}

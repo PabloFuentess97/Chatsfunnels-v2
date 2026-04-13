@@ -48,7 +48,7 @@ export default function PagesListPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this landing page?")) return;
+    if (!confirm("\u00bfEliminar esta pagina?")) return;
     await fetch(`/api/landing-pages/${id}`, { method: "DELETE" });
     fetchPages();
   };
@@ -61,7 +61,7 @@ export default function PagesListPage() {
     await fetch("/api/landing-pages", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: `${page.name} (Copy)`, content: data.data.content }),
+      body: JSON.stringify({ name: `${page.name} (Copia)`, content: data.data.content }),
     });
     fetchPages();
   };
@@ -74,8 +74,8 @@ export default function PagesListPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Landing Pages</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Build and manage visual landing pages</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Paginas de Aterrizaje</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Construye y gestiona paginas de aterrizaje visuales</p>
         </div>
       </div>
 
@@ -85,18 +85,18 @@ export default function PagesListPage() {
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder="New page name..."
+            placeholder="Nombre de la nueva pagina..."
             className="flex-1 px-3 py-2 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
             required
           />
-          <Button type="submit" loading={creating}>Create Page</Button>
+          <Button type="submit" loading={creating}>Crear Pagina</Button>
         </form>
       </div>
 
       {pages.length === 0 ? (
         <EmptyState
-          title="No landing pages yet"
-          description="Create your first landing page with our visual drag-and-drop builder."
+          title="Aun no tienes paginas"
+          description="Crea tu primera pagina de aterrizaje con nuestro constructor visual drag-and-drop."
         />
       ) : (
         <div className="space-y-3">
@@ -106,26 +106,26 @@ export default function PagesListPage() {
                 <div className="flex items-center gap-3">
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">{page.name}</span>
                   <Badge variant={page.published ? "success" : "default"}>
-                    {page.published ? "Published" : "Draft"}
+                    {page.published ? "Publicada" : "Borrador"}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
                   <span>/lp/{page.slug}</span>
                   {page.funnel && <span>Funnel: {page.funnel.name}</span>}
-                  <span>Updated {formatDate(page.updatedAt)}</span>
+                  <span>Actualizada {formatDate(page.updatedAt)}</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 {page.published && (
                   <a href={`/lp/${page.slug}`} target="_blank" rel="noopener noreferrer">
-                    <Button size="sm" variant="ghost">View</Button>
+                    <Button size="sm" variant="ghost">Ver</Button>
                   </a>
                 )}
-                <Button size="sm" variant="ghost" onClick={() => handleDuplicate(page)}>Duplicate</Button>
+                <Button size="sm" variant="ghost" onClick={() => handleDuplicate(page)}>Duplicar</Button>
                 <Link href={`/pages/${page.id}/edit`}>
-                  <Button size="sm" variant="outline">Edit</Button>
+                  <Button size="sm" variant="outline">Editar</Button>
                 </Link>
-                <Button size="sm" variant="danger" onClick={() => handleDelete(page.id)}>Delete</Button>
+                <Button size="sm" variant="danger" onClick={() => handleDelete(page.id)}>Eliminar</Button>
               </div>
             </div>
           ))}
