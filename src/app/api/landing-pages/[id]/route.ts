@@ -1,40 +1,45 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { requireAuth, unauthorized } from "@/modules/auth/auth-guard";
 import prisma from "@/lib/prisma";
+import { apiSuccess, apiError, apiServerError, getUserId } from "@/lib/api-utils";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await requireAuth();
-  if (!session) return unauthorized();
+  try {
+    const session = await requireAuth();
+    if (!session) return unauthorized();
 
-  const { id } = await params;
-  const page = await prisma.landingPage.findFirst({
-    where: { id, userId: (session.user as any).id },
-    include: { funnel: { select: { id: true, name: true, slug: true } } },
-  });
+    const { id } = await params;
+    const page = await prisma.landingPage.findFirst({
+      where: { id, userId: getUserId(session) },
+      include: { funnel: { select: { id: true, name: true, slug: true } } },
+    });
 
-  if (!page) {
-    return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
+    if (!page) {
+      return apiError("Not found", 404);
+    }
+
+    return apiSuccess(page);
+  } catch (error) {
+    return apiServerError(error, "GET /api/landing-pages/[id]");
   }
-
-  return NextResponse.json({ success: true, data: page });
 }
 
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await requireAuth();
-  if (!session) return unauthorized();
-
-  const { id } = await params;
-  const body = await req.json();
-
   try {
+    const session = await requireAuth();
+    if (!session) return unauthorized();
+
+    const { id } = await params;
+    const body = await req.json();
+
     const page = await prisma.landingPage.update({
-      where: { id, userId: (session.user as any).id },
+      where: { id, userId: getUserId(session) },
       data: {
         ...(body.name !== undefined && { name: body.name }),
         ...(body.content !== undefined && { content: body.content }),
@@ -43,9 +48,9 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json({ success: true, data: page });
-  } catch {
-    return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
+    return apiSuccess(page);
+  } catch (error) {
+    return apiServerError(error, "PUT /api/landing-pages/[id]");
   }
 }
 
@@ -53,16 +58,16 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await requireAuth();
-  if (!session) return unauthorized();
-
-  const { id } = await params;
   try {
+    const session = await requireAuth();
+    if (!session) return unauthorized();
+
+    const { id } = await params;
     await prisma.landingPage.delete({
-      where: { id, userId: (session.user as any).id },
+      where: { id, userId: getUserId(session) },
     });
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
+    return apiSuccess(null);
+  } catch (error) {
+    return apiServerError(error, "DELETE /api/landing-pages/[id]");
   }
 }

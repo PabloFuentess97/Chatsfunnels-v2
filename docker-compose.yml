@@ -1,32 +1,44 @@
-version: "3.8"
-
 services:
   db:
     image: postgres:16-alpine
-    restart: always
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: chatsfunnels
+      POSTGRES_USER: ${POSTGRES_USER:-chatsfunnels}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_in_production}
+      POSTGRES_DB: ${POSTGRES_DB:-chatsfunnels}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-chatsfunnels}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    restart: always
+    restart: unless-stopped
     ports:
       - "3000:3000"
+    env_file:
+      - .env.production
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/chatsfunnels?schema=public
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-change-me-in-production}
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
-      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chatsfunnels}:${POSTGRES_PASSWORD:-changeme_in_production}@db:5432/${POSTGRES_DB:-chatsfunnels}?schema=public
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
 
 volumes:
   postgres_data:
+    driver: local

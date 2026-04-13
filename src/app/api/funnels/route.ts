@@ -1,27 +1,29 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { requireAuth, unauthorized } from "@/modules/auth/auth-guard";
 import { createFunnel, getUserFunnels } from "@/services/funnel-service";
+import { apiSuccess, apiError, apiServerError, getUserId } from "@/lib/api-utils";
 
 export async function GET() {
-  const session = await requireAuth();
-  if (!session) return unauthorized();
+  try {
+    const session = await requireAuth();
+    if (!session) return unauthorized();
 
-  const funnels = await getUserFunnels((session.user as any).id);
-  return NextResponse.json({ success: true, data: funnels });
+    const funnels = await getUserFunnels(getUserId(session));
+    return apiSuccess(funnels);
+  } catch (error) {
+    return apiServerError(error, "GET /api/funnels");
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const session = await requireAuth();
-  if (!session) return unauthorized();
-
   try {
+    const session = await requireAuth();
+    if (!session) return unauthorized();
+
     const body = await req.json();
-    const funnel = await createFunnel((session.user as any).id, body);
-    return NextResponse.json({ success: true, data: funnel }, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 400 }
-    );
+    const funnel = await createFunnel(getUserId(session), body);
+    return apiSuccess(funnel, 201);
+  } catch (error) {
+    return apiServerError(error, "POST /api/funnels");
   }
 }

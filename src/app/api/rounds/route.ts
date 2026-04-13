@@ -1,16 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { requireAuth, unauthorized } from "@/modules/auth/auth-guard";
 import { startRound } from "@/services/round-service";
+import { apiSuccess, apiServerError } from "@/lib/api-utils";
 
 export async function POST(req: NextRequest) {
-  const session = await requireAuth();
-  if (!session) return unauthorized();
-
-  const { groupId, maxClicks } = await req.json();
   try {
+    const session = await requireAuth();
+    if (!session) return unauthorized();
+
+    const { groupId, maxClicks } = await req.json();
     const round = await startRound(groupId, maxClicks || 100);
-    return NextResponse.json({ success: true, data: round }, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+    return apiSuccess(round, 201);
+  } catch (error) {
+    return apiServerError(error, "POST /api/rounds");
   }
 }

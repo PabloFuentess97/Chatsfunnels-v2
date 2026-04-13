@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { requireAuth, unauthorized } from "@/modules/auth/auth-guard";
 import prisma from "@/lib/prisma";
+import { apiSuccess, apiError, apiServerError, getUserId } from "@/lib/api-utils";
 
 // Public endpoint for form submissions from landing pages
 export async function POST(req: NextRequest) {
@@ -8,7 +9,7 @@ export async function POST(req: NextRequest) {
     const { landingPageId, formBlockId, data } = await req.json();
 
     if (!landingPageId || !formBlockId || !data) {
-      return NextResponse.json({ success: false, error: "Missing fields" }, { status: 400 });
+      return apiError("Missing fields", 400);
     }
 
     const submission = await prisma.formSubmission.create({
@@ -21,39 +22,42 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ success: true, data: { id: submission.id } }, { status: 201 });
+    return apiSuccess({ id: submission.id }, 201);
   } catch (error) {
-    console.error("Form submission error:", error);
-    return NextResponse.json({ success: false, error: "Submission failed" }, { status: 500 });
+    return apiServerError(error, "POST /api/form-submissions");
   }
 }
 
 // Authenticated endpoint to list submissions for a user's pages
 export async function GET(req: NextRequest) {
-  const session = await requireAuth();
-  if (!session) return unauthorized();
+  try {
+    const session = await requireAuth();
+    if (!session) return unauthorized();
 
-  const url = new URL(req.url);
-  const pageId = url.searchParams.get("pageId");
+    const url = new URL(req.url);
+    const pageId = url.searchParams.get("pageId");
 
-  if (!pageId) {
-    return NextResponse.json({ success: false, error: "pageId required" }, { status: 400 });
+    if (!pageId) {
+      return apiError("pageId required", 400);
+    }
+
+    // Verify ownership
+    const page = await prisma.landingPage.findFirst({
+      where: { id: pageId, userId: getUserId(session) },
+    });
+
+    if (!page) {
+      return apiError("Not found", 404);
+    }
+
+    const submissions = await prisma.formSubmission.findMany({
+      where: { landingPageId: pageId },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    });
+
+    return apiSuccess(submissions);
+  } catch (error) {
+    return apiServerError(error, "GET /api/form-submissions");
   }
-
-  // Verify ownership
-  const page = await prisma.landingPage.findFirst({
-    where: { id: pageId, userId: (session.user as any).id },
-  });
-
-  if (!page) {
-    return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
-  }
-
-  const submissions = await prisma.formSubmission.findMany({
-    where: { landingPageId: pageId },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-  });
-
-  return NextResponse.json({ success: true, data: submissions });
 }

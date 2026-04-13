@@ -69,7 +69,7 @@ export async function GET(
   const parsed = parseUserAgent(userAgent);
 
   // ── Record click + deduct credit in parallel (non-blocking for redirect) ──
-  const writeOps = Promise.all([
+  const writeOps = Promise.allSettled([
     recordClick(link.id, funnel.id, {
       ip,
       userAgent,
@@ -82,13 +82,16 @@ export async function GET(
       where: { id: funnel.userId },
       data: { credits: { decrement: 1 } },
     }),
-  ]).catch((err) => {
-    console.error("Click recording failed:", err);
+  ]).then((results) => {
+    for (const r of results) {
+      if (r.status === "rejected") {
+        console.error("Click recording failed:", r.reason);
+      }
+    }
   });
 
-  // Don't await writes - redirect immediately for best latency
-  // The writes will complete in the background
-  void writeOps;
+  // Await writes for data consistency, but don't let failures block the redirect
+  await writeOps;
 
   // ── Serve response ──
   if (allPixels.length > 0) {
@@ -96,6 +99,20 @@ export async function GET(
   }
 
   return NextResponse.redirect(link.url, 302);
+}
+
+// ── Sanitization helpers ──────────────────────────────────────────────────
+
+function sanitizePixelId(id: string): string {
+  return id.replace(/[^a-zA-Z0-9\-_]/g, "");
+}
+
+function sanitizeUrl(url: string): string {
+  const encoded = encodeURI(url);
+  if (!encoded.startsWith("http://") && !encoded.startsWith("https://")) {
+    return "about:blank";
+  }
+  return encoded;
 }
 
 // ── Pixel injection page ──────────────────────────────────────────────────
@@ -107,15 +124,17 @@ interface PixelData {
 }
 
 function servePixelPage(pixels: PixelData[], targetUrl: string): NextResponse {
-  const safeUrl = targetUrl.replace(/"/g, "&quot;");
+  const safeUrl = sanitizeUrl(targetUrl);
 
   const pixelScripts = pixels
     .map((p) => {
       if (p.type === "FACEBOOK" && p.pixelId) {
-        return `<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${p.pixelId}');fbq('track','PageView');</script>`;
+        const pid = sanitizePixelId(p.pixelId);
+        return `<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${pid}');fbq('track','PageView');</script>`;
       }
       if (p.type === "GOOGLE_ANALYTICS" && p.pixelId) {
-        return `<script async src="https://www.googletagmanager.com/gtag/js?id=${p.pixelId}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${p.pixelId}');</script>`;
+        const pid = sanitizePixelId(p.pixelId);
+        return `<script async src="https://www.googletagmanager.com/gtag/js?id=${pid}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${pid}');</script>`;
       }
       if (p.type === "CUSTOM" && p.script) {
         return p.script;
