@@ -1,22 +1,14 @@
 FROM node:20-alpine AS base
 
-# ─── Dependencies (production only) ─────────────────────────────────────────
+# ─── All dependencies (for build + prisma) ──────────────────────────────────
 FROM base AS deps
-RUN apk add --no-cache libc6-compat openssl
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
-
-# ─── Dependencies (all, for build) ──────────────────────────────────────────
-FROM base AS dev-deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
 # ─── Generate Prisma Client ─────────────────────────────────────────────────
-FROM dev-deps AS prisma
-WORKDIR /app
+FROM deps AS prisma
 COPY prisma ./prisma
 RUN npx prisma generate
 
@@ -25,8 +17,7 @@ FROM base AS builder
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
-COPY --from=dev-deps /app/node_modules ./node_modules
-COPY --from=prisma /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=prisma /app/node_modules ./node_modules
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -54,17 +45,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy Prisma CLI + client for db push to work at runtime
-COPY --from=dev-deps /app/node_modules/prisma ./node_modules/prisma
-COPY --from=dev-deps /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=prisma /app/node_modules/.prisma ./node_modules/.prisma
+# Copy FULL node_modules from deps (prisma needs effect, @prisma/config, etc.)
+COPY --from=prisma /app/node_modules ./node_modules
 COPY --chown=nextjs:nodejs prisma ./prisma
-
-# Create the .bin symlink so `npx prisma` and direct calls work
-RUN mkdir -p node_modules/.bin && \
-    ln -sf ../prisma/build/index.js node_modules/.bin/prisma
-
-# Copy package.json
 COPY --chown=nextjs:nodejs package.json ./
 
 # Copy entrypoint script
