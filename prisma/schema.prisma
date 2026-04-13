@@ -98,6 +98,7 @@ model User {
   sessions       Session[]
   creditHistory  Credit[]
   groupMembers   GroupMember[]
+  landingPages   LandingPage[]
 }
 
 model Funnel {
@@ -117,6 +118,7 @@ model Funnel {
   rounds         Round[]
   domains        Domain[]
   trackingPixels TrackingPixel[]
+  landingPages   LandingPage[]
 
   @@index([slug])
   @@index([userId])
@@ -256,4 +258,24 @@ model Webhook {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Page Builder ────────────────────────────────────────────────────────────
+
+model LandingPage {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String
+  funnelId  String?
+  content   Json     @default("[]")
+  published Boolean  @default(false)
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  funnel Funnel? @relation(fields: [funnelId], references: [id])
+
+  @@index([userId])
+  @@index([slug])
 }

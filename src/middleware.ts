@@ -17,5 +17,6 @@ export const config = {
     "/domains/:path*",
     "/settings/:path*",
     "/ranking/:path*",
+    "/pages/:path*",
   ],
 };
