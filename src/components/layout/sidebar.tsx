@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
-import { useTheme } from "./theme-provider";
+import { signOut } from "next-auth/react";
 import { useState } from "react";
 
 const navSections = [
@@ -36,8 +35,6 @@ const navSections = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { theme, toggleTheme } = useTheme();
-  const { data: session } = useSession();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -102,27 +99,7 @@ export default function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="p-3 border-t border-gray-200 dark:border-gray-800 space-y-1 flex-shrink-0">
-          {/* User info */}
-          {session?.user && (
-            <div className="px-3 py-2 mb-1">
-              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{session.user.name}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 truncate">{session.user.email}</p>
-            </div>
-          )}
-          <button
-            onClick={toggleTheme}
-            className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-[13px] font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors"
-          >
-            <svg className="w-[18px] h-[18px] opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {theme === "dark" ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              )}
-            </svg>
-            {theme === "dark" ? "Modo claro" : "Modo oscuro"}
-          </button>
+        <div className="p-3 border-t border-gray-200 dark:border-gray-800 flex-shrink-0">
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-[13px] font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
