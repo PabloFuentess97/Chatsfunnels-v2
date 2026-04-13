@@ -77,7 +77,15 @@ export async function getFunnelBySlug(slug: string) {
 export async function updateFunnel(
   id: string,
   userId: string,
-  data: { name?: string; description?: string; isActive?: boolean; clicksPerRound?: number }
+  data: {
+    name?: string;
+    description?: string;
+    isActive?: boolean;
+    clicksPerRound?: number;
+    fallbackUrl?: string | null;
+    rotationMode?: string;
+    roundMode?: string;
+  }
 ) {
   return prisma.funnel.update({
     where: { id, userId },
@@ -93,7 +101,7 @@ export async function deleteFunnel(id: string, userId: string) {
 
 export async function addLink(
   funnelId: string,
-  data: { url: string; weight?: number; priority?: number }
+  data: { url: string; weight?: number; priority?: number; maxClicks?: number | null; label?: string }
 ) {
   const lastLink = await prisma.link.findFirst({
     where: { funnelId },
@@ -107,13 +115,15 @@ export async function addLink(
       order: (lastLink?.order || 0) + 1,
       weight: data.weight || 1.0,
       priority: data.priority || 0,
+      maxClicks: data.maxClicks ?? null,
+      label: data.label || null,
     },
   });
 }
 
 export async function updateLink(
   id: string,
-  data: { url?: string; weight?: number; priority?: number; order?: number; isActive?: boolean }
+  data: { url?: string; weight?: number; priority?: number; order?: number; isActive?: boolean; maxClicks?: number | null; label?: string }
 ) {
   return prisma.link.update({
     where: { id },

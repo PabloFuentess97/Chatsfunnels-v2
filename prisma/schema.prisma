@@ -109,6 +109,9 @@ model Funnel {
   userId         String
   isActive       Boolean  @default(true)
   clicksPerRound Int      @default(10)
+  fallbackUrl    String?
+  rotationMode   String   @default("weighted")
+  roundMode      String   @default("infinite")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -125,16 +128,18 @@ model Funnel {
 }
 
 model Link {
-  id        String   @id @default(cuid())
-  url       String
-  funnelId  String
-  order     Int
-  clicks    Int      @default(0)
-  weight    Float    @default(1.0)
-  priority  Int      @default(0)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  url                 String
+  funnelId            String
+  order               Int
+  clicks              Int      @default(0)
+  weight              Float    @default(1.0)
+  priority            Int      @default(0)
+  isActive            Boolean  @default(true)
+  maxClicks           Int?
+  label               String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   funnel      Funnel  @relation(fields: [funnelId], references: [id], onDelete: Cascade)
   clickEvents Click[]
