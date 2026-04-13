@@ -1,13 +1,13 @@
 FROM node:20-alpine AS base
 
-# ─── Dependencies ────────────────────────────────────────────────────────────
+# ─── Dependencies (production only) ─────────────────────────────────────────
 FROM base AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-# Also install dev deps for build
+# ─── Dependencies (all, for build) ──────────────────────────────────────────
 FROM base AS dev-deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
@@ -20,7 +20,7 @@ WORKDIR /app
 COPY prisma ./prisma
 RUN npx prisma generate
 
-# ─── Build ───────────────────────────────────────────────────────────────────
+# ─── Build Next.js ───────────────────────────────────────────────────────────
 FROM base AS builder
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
@@ -32,7 +32,6 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-# Build needs these at build time (can be dummy values)
 ARG DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 ARG NEXTAUTH_SECRET="build-secret"
 ARG NEXTAUTH_URL="http://localhost:3000"
@@ -55,11 +54,14 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy Prisma files for migrations
+# Copy ALL of node_modules prisma + @prisma for db push/migrate to work
+COPY --from=dev-deps /app/node_modules/prisma ./node_modules/prisma
+COPY --from=dev-deps /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=prisma /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=deps /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=deps /app/node_modules/prisma ./node_modules/prisma
 COPY --chown=nextjs:nodejs prisma ./prisma
+
+# Copy package.json (needed by npx to find local prisma)
+COPY --chown=nextjs:nodejs package.json ./
 
 # Copy entrypoint script
 COPY --chown=nextjs:nodejs scripts/entrypoint.sh ./entrypoint.sh
